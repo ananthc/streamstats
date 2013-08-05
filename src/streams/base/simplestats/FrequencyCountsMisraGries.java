@@ -140,11 +140,11 @@ public class FrequencyCountsMisraGries<T> extends BaseRichBolt {
     
 
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-    	StringBuffer bffr = new StringBuffer("topN");
+//    	StringBuffer bffr = new StringBuffer("topN");
 //    	for (int i=0;i < topCountsToOutput;i++) {
 //    		bffr.append(","+ Integer.toString(i));
 //    	}	
-    	declarer.declare(new Fields(bffr.toString()));
+    	declarer.declare(new Fields("original","topN"));
     }    
     
 
