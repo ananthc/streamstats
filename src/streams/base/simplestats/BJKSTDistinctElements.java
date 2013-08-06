@@ -2,17 +2,19 @@ package streams.base.simplestats;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import streams.base.hashtypes.BaseHasher;
+import streams.base.hashtypes.BaseHasherFactory;
+import streams.base.hashtypes.Universal2Hasher;
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Tuple;
 
-public class BJKSTDistinctElements<T extends IntegerHasher>  extends BaseRichBolt {
+public class BJKSTDistinctElements<T extends BaseHasherFactory>  extends BaseRichBolt {
 	
 
 	private static final long serialVersionUID = -2032575802259420762L;
@@ -29,7 +31,11 @@ public class BJKSTDistinctElements<T extends IntegerHasher>  extends BaseRichBol
 	
 	private int sizeOfMedianSet;
 
-	T type;
+	T primaryHasherFactory;
+	
+	T seondaryHasherFactory;
+	
+	
 	// make this large enough as possible. This one effects the permissible size of the buffer bins for the secondary hash function
 	private int secondaryHashSizeFactor ;
 	
@@ -43,27 +49,32 @@ public class BJKSTDistinctElements<T extends IntegerHasher>  extends BaseRichBol
 	
 	private List<HashMap<Integer,Integer>> buffers = new ArrayList<HashMap<Integer,Integer>>();
 	
-	private List<Universal2Hasher> hHashers = new ArrayList<Universal2Hasher>();
+	private List<BaseHasher> hHashers = new ArrayList<BaseHasher>();
 	
-	private List<Universal2Hasher> gHashers = new ArrayList<Universal2Hasher>();
+	private List<BaseHasher> gHashers = new ArrayList<BaseHasher>();
 	
-	public BJKSTDistinctElements(int numberOfBins, int numOfBitsInWord, int numberOfMedianAttempts , 
+	public BJKSTDistinctElements(T firstHasher , T seondaryHasher ,int numberOfMedianAttempts , 
 												int sizeOfEachMedianSet, int secondaryHashSizeFactor )
 														throws InvalidConfigException  {
-		this.numberOfBins = numberOfBins;
+		this.primaryHasherFactory = firstHasher;
+		this.seondaryHasherFactory = seondaryHasher;
 		this.numMedians = numberOfMedianAttempts;
 		this.sizeOfMedianSet = sizeOfEachMedianSet;
 		this.secondaryHashSizeFactor = secondaryHashSizeFactor;
 		init();
 	}
 
-	public BJKSTDistinctElements(int numberOfBins, int numberOfMedianAttempts , int sizeOfEachMedianSet, 
+	public BJKSTDistinctElements(T firstHasher , T seondaryHasher ,int numberOfMedianAttempts , int sizeOfEachMedianSet, 
 			                                       float allowedError, float confidence_relaxation_limit,int secondaryHashSizeFactor )
 	               throws InvalidConfigException {
 		if (allowedError > 1) {
 			throw new InvalidConfigException("Permitted error should be < 1 and in float format");
 		}
-		this.numberOfBins = numberOfBins;
+		if (confidence_relaxation_limit > 1) {
+			throw new InvalidConfigException("Permitted confidence_relaxation_limit should be < 1 and in float format");
+		}
+		this.primaryHasherFactory = firstHasher;
+		this.seondaryHasherFactory = seondaryHasher;
 		this.numMedians = numberOfMedianAttempts;
 		this.sizeOfMedianSet = sizeOfEachMedianSet;
 		this.error = allowedError;
@@ -72,12 +83,8 @@ public class BJKSTDistinctElements<T extends IntegerHasher>  extends BaseRichBol
 		init();
 	}
 	
-	public BJKSTDistinctElements(int numberOfBins,int numMedians,int sizeOfEachMedianSet, int secondaryHashSizeFactor) {
-		this.numberOfBins = numberOfBins;
-		this.sizeOfMedianSet = sizeOfEachMedianSet;
-		this.numMedians = numMedians;
-		this.secondaryHashSizeFactor = secondaryHashSizeFactor;
-		init();
+	public static int getNumberOfSecondaryBinsForPrimaryBins(int primaryBinsNumber,float errorTolerance) {
+		return (int)(Math.pow(errorTolerance,-4.0) * Math.pow(Math.log(primaryBinsNumber), 2));
 	}
 	
 	private void init() {
@@ -85,8 +92,8 @@ public class BJKSTDistinctElements<T extends IntegerHasher>  extends BaseRichBol
 		for ( int i =0 ; i < numMedians; i++) {
 			limits.add(0);
 			buffers.add(new HashMap<Integer,Integer>());
-			hHashers.add(new Universal2Hasher(numberOfBins,w));
-			gHashers.add( new Universal2Hasher((secondaryHashSizeFactor * numSecondaryBins),w));
+			hHashers.add(primaryHasherFactory.newHasher());
+			gHashers.add(seondaryHasherFactory.newHasher());
 		}
 	}
 	
@@ -99,7 +106,7 @@ public class BJKSTDistinctElements<T extends IntegerHasher>  extends BaseRichBol
 	@Override
 	public void execute(Tuple tuple) {
 		for ( int i =0 ; i < numMedians; i++) {
-			String binaryRepr = Integer.toBinaryString(type.getIntegerRepresentation());
+			String binaryRepr = Integer.toBinaryString(type.getIntegerRepresentation(tuple));
 			int zereos_p = binaryRepr.length() - binaryRepr.lastIndexOf('1');
 
 		}

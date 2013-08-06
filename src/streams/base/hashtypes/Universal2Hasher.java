@@ -1,6 +1,9 @@
-package streams.base.simplestats;
+package streams.base.hashtypes;
 
 import java.util.Random;
+
+import backtype.storm.tuple.Fields;
+import backtype.storm.tuple.Tuple;
 
 public class Universal2Hasher {
 	
@@ -28,7 +31,7 @@ public class Universal2Hasher {
 		return finalSeed;
 	}
 	
-	
+
 	
 	public int hash(int x) {
 		 return ((a*x+b) >>> (w-M));
