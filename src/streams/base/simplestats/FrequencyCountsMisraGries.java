@@ -144,7 +144,7 @@ public class FrequencyCountsMisraGries<T> extends BaseRichBolt {
 //    	for (int i=0;i < topCountsToOutput;i++) {
 //    		bffr.append(","+ Integer.toString(i));
 //    	}	
-    	declarer.declare(new Fields("original","topN"));
+    	declarer.declare(new Fields("topN"));
     }    
     
 
