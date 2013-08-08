@@ -1,10 +1,10 @@
 package streams.base.simplestats;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.DecimalFormat;
+import java.util.*;
 
+import backtype.storm.tuple.Fields;
+import backtype.storm.tuple.Values;
 import streams.base.hashtypes.BaseHasher;
 import streams.base.hashtypes.BaseHasherFactory;
 import streams.base.hashtypes.Universal2Hasher;
@@ -47,12 +47,18 @@ public class BJKSTDistinctElements<T extends BaseHasherFactory>  extends BaseRic
 	
 	private List<Integer> limits = new ArrayList<Integer>();
 	
-	private List<HashMap<Integer,Integer>> buffers = new ArrayList<HashMap<Integer,Integer>>();
+    private int bufferSize = 100;
+
+	private List<HashSet<String>> buffers = new ArrayList<HashSet<String>>();
 	
-	private List<BaseHasher> hHashers = new ArrayList<BaseHasher>();
+	private List<BaseHasher> hHashers = new ArrayList<>();
 	
 	private List<BaseHasher> gHashers = new ArrayList<BaseHasher>();
-	
+
+    private int intLength = Integer.toString(Integer.MAX_VALUE).length();
+
+    private String  lengthOfIntegerRepresentation = null;
+
 	public BJKSTDistinctElements(T firstHasher , T seondaryHasher ,int numberOfMedianAttempts , 
 												int sizeOfEachMedianSet, int secondaryHashSizeFactor )
 														throws InvalidConfigException  {
@@ -89,9 +95,11 @@ public class BJKSTDistinctElements<T extends BaseHasherFactory>  extends BaseRic
 	
 	private void init() {
 		int numSecondaryBins = (int)(Math.pow(error,-4.0) * Math.pow(Math.log(numberOfBins), 2));
+        this.bufferSize =  (int) ((this.sizeOfMedianSet) / Math.pow(this.error,2.0) ) ;
+        lengthOfIntegerRepresentation = ("%0" + intLength + "d");
 		for ( int i =0 ; i < numMedians; i++) {
 			limits.add(0);
-			buffers.add(new HashMap<Integer,Integer>());
+  			buffers.add(new HashSet<String>());
 			hHashers.add(primaryHasherFactory.newHasher());
 			gHashers.add(seondaryHasherFactory.newHasher());
 		}
@@ -106,19 +114,51 @@ public class BJKSTDistinctElements<T extends BaseHasherFactory>  extends BaseRic
 	@Override
 	public void execute(Tuple tuple) {
 		for ( int i =0 ; i < numMedians; i++) {
-			String binaryRepr = Integer.toBinaryString(type.getIntegerRepresentation(tuple));
-			int zereos_p = binaryRepr.length() - binaryRepr.lastIndexOf('1');
-
+			String binaryRepr = Integer.toBinaryString(hHashers.get(i).getIntegerRepresentation(tuple));
+			int zereosP = binaryRepr.length() - binaryRepr.lastIndexOf('1');
+            int currentZ = limits.get(i);
+            if (zereosP >= currentZ) {
+                HashSet<String> currentBuffer = buffers.get(i);
+                currentBuffer.add(String.format(lengthOfIntegerRepresentation, gHashers.get(i).getIntegerRepresentation(tuple)) +
+                        String.format(lengthOfIntegerRepresentation, zereosP));
+                while (currentBuffer.size() > bufferSize    ) {
+                    currentZ = currentZ + 1;
+                    for (Iterator<String> itr = currentBuffer.iterator(); itr.hasNext();) {
+                        String element = itr.next();
+                        int zeroesOld = Integer.parseInt(element.substring(intLength));
+                        if (zeroesOld < currentZ) {
+                            itr.remove();
+                        }
+                    }
+                }
+            }
 		}
-		
-		
-    	_collector.emit(tuple, toPushFurther);
+		HashMap<Integer,Integer> results = new HashMap<>();
+        for ( int i =0 ; i < numMedians; i++) {
+            int currentGuess = (int)  (buffers.get(i).size() * Math.pow(2,limits.get(i)));
+            if (results.containsKey(currentGuess)) {
+                results.put(currentGuess,1);
+            }
+            else {
+                int currentCount = results.get(currentGuess);
+                results.put(currentGuess,(currentCount + 1));
+            }
+        }
+        int finalEstimate = 0;
+        Iterator it = results.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<Integer,Integer> pair = (Map.Entry<Integer,Integer>)it.next();
+            int possibleAnswer = pair.getValue();
+            if (possibleAnswer > 0) {
+                finalEstimate = possibleAnswer;
+            }
+        }
+    	_collector.emit(tuple, new Values(finalEstimate));
     	_collector.ack(tuple);
 	}
 
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		// TODO Auto-generated method stub
-		
+        declarer.declare(new Fields("distinctCount"));
 	}
 }
