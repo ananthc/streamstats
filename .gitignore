@@ -1,1 +1,6 @@
 *.class
+.*
+target/*
+
+
+target/classes/META-INF/maven/streamstats/streamstats/pom.properties
