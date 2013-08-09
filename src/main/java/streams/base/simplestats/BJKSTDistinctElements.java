@@ -1,13 +1,11 @@
 package streams.base.simplestats;
 
-import java.text.DecimalFormat;
 import java.util.*;
 
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 import streams.base.hashtypes.BaseHasher;
 import streams.base.hashtypes.BaseHasherFactory;
-import streams.base.hashtypes.Universal2Hasher;
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;
@@ -51,7 +49,7 @@ public class BJKSTDistinctElements<T extends BaseHasherFactory>  extends BaseRic
 
 	private List<HashSet<String>> buffers = new ArrayList<HashSet<String>>();
 	
-	private List<BaseHasher> hHashers = new ArrayList<>();
+	private List<BaseHasher> hHashers = new ArrayList<BaseHasher>();
 	
 	private List<BaseHasher> gHashers = new ArrayList<BaseHasher>();
 
@@ -133,7 +131,7 @@ public class BJKSTDistinctElements<T extends BaseHasherFactory>  extends BaseRic
                 }
             }
 		}
-		HashMap<Integer,Integer> results = new HashMap<>();
+		HashMap<Integer,Integer> results = new HashMap<Integer,Integer>();
         for ( int i =0 ; i < numMedians; i++) {
             int currentGuess = (int)  (buffers.get(i).size() * Math.pow(2,limits.get(i)));
             if (results.containsKey(currentGuess)) {

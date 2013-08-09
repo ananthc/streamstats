@@ -2,9 +2,6 @@ package streams.base.hashtypes;
 
 import java.util.Random;
 
-import backtype.storm.tuple.Fields;
-import backtype.storm.tuple.Tuple;
-
 public class Universal2Hasher {
 	
 	private int w=32;
