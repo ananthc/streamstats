@@ -1,23 +1,28 @@
 package streams.base.hashtypes;
 
 import backtype.storm.tuple.Tuple;
+import streams.base.simplestats.InvalidDataException;
 
 public class Integer2UniversalHasher extends BaseHasher {
 
-	private String feildNameToUse;
-	
-	
+	private String fieldNameToUse;
+
+    private Universal2Hasher hasher;
+
 	
 	public Integer2UniversalHasher(String fieldName,int numberOfBins, int numOfBitsInWord) {
-		super(numberOfBins,numOfBitsInWord);
-		this.feildNameToUse = fieldName;
+        this.hasher = new Universal2Hasher(numberOfBins,numOfBitsInWord);
+		this.fieldNameToUse = fieldName;
 		
 	}
 	
 	@Override
-	public int getIntegerRepresentation(Tuple input) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int hashToInt(Tuple input) throws InvalidDataException  {
+        if (!input.contains(fieldNameToUse)) {
+            throw new InvalidDataException("The tuple did not contain that value");
+        }
+        int valueToHash = input.getIntegerByField(fieldNameToUse);
+        return hasher.hash(valueToHash);
 	}
 
 }

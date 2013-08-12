@@ -1,16 +1,14 @@
 package streams.base.hashtypes;
 
 import backtype.storm.tuple.Tuple;
+import streams.base.simplestats.InvalidDataException;
+
 
 public abstract class BaseHasher {
 	
-	private Universal2Hasher hasher;
+
 	
-	public BaseHasher(int numberOfBins,int numOfBitsInWord) {
-		hasher = new Universal2Hasher(numberOfBins,numOfBitsInWord);
-	}
-	
-	public abstract int getIntegerRepresentation(Tuple input);
+	public abstract int hashToInt(Tuple input) throws InvalidDataException;
 
 
 
