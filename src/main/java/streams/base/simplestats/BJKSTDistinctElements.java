@@ -91,7 +91,7 @@ public class BJKSTDistinctElements<T extends BaseHasherFactory>  extends BaseRic
 		return (int)(Math.pow(errorTolerance,-4.0) * Math.pow(Math.log(primaryBinsNumber), 2));
 	}
 	
-	private void init() {
+	private void init() throws InvalidConfigException {
 		int numSecondaryBins = (int)(Math.pow(error,-4.0) * Math.pow(Math.log(numberOfBins), 2));
         this.bufferSize =  (int) ((this.sizeOfMedianSet) / Math.pow(this.error,2.0) ) ;
         lengthOfIntegerRepresentation = ("%0" + intLength + "d");
@@ -117,8 +117,12 @@ public class BJKSTDistinctElements<T extends BaseHasherFactory>  extends BaseRic
             int currentZ = limits.get(i);
             if (zereosP >= currentZ) {
                 HashSet<String> currentBuffer = buffers.get(i);
-                currentBuffer.add(String.format(lengthOfIntegerRepresentation, gHashers.get(i).getIntegerRepresentation(tuple)) +
-                        String.format(lengthOfIntegerRepresentation, zereosP));
+                try {
+                    currentBuffer.add(String.format(lengthOfIntegerRepresentation, gHashers.get(i).hashToInt(tuple)) +
+                            String.format(lengthOfIntegerRepresentation, zereosP));
+                } catch (InvalidDataException e) {
+                    e.printStackTrace();
+                }
                 while (currentBuffer.size() > bufferSize    ) {
                     currentZ = currentZ + 1;
                     for (Iterator<String> itr = currentBuffer.iterator(); itr.hasNext();) {

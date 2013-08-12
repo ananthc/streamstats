@@ -1,11 +1,27 @@
 package streams.base.hashtypes;
 
-/**
- * Created with IntelliJ IDEA.
- * User: ananthgundabattula
- * Date: 8/12/13
- * Time: 8:58 PM
- * To change this template use File | Settings | File Templates.
- */
-public class CompositeHasherFactory {
+
+import streams.base.simplestats.InvalidConfigException;
+
+public class CompositeHasherFactory  extends  BaseHasherFactory {
+
+    private String[] fieldNames;
+
+    private CompositeHashDataType[] types;
+
+    private int numBins;
+
+    private int maxStringLength;
+
+    public CompositeHasherFactory(String[] fieldNames,CompositeHashDataType[] types, int numBins, int maxStringLength) {
+        this.fieldNames = fieldNames;
+        this.types = types;
+        this.numBins = numBins;
+        this.maxStringLength = maxStringLength;
+    }
+
+    @Override
+    public BaseHasher newHasher() throws InvalidConfigException {
+        return new Composite2UniversalHasher(fieldNames, types,  numBins,  maxStringLength);
+    }
 }

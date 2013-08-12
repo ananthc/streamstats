@@ -1,9 +1,11 @@
 package streams.base.hashtypes;
 
+import streams.base.simplestats.InvalidConfigException;
+
 public interface BaseHasherFactory {
 	
 	
-	BaseHasher newHasher();
+	BaseHasher newHasher() throws InvalidConfigException;
 
 	
 

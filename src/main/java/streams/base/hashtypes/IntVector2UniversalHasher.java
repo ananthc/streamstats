@@ -63,8 +63,8 @@ public class IntVector2UniversalHasher extends BaseHasher {
         }
 
         long sum = 0;
-        int firstIndex = 2*i;
-        int secondIndex = (2 * i) + 1;
+        int firstIndex = 0;
+        int secondIndex =  1;
         for (int i=0; i < k/2; i++) {
             firstIndex = 2*i;
             secondIndex = (2 * i) + 1;

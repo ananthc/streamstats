@@ -1,5 +1,7 @@
 package streams.base.hashtypes;
 
+import streams.base.simplestats.InvalidConfigException;
+
 public class StringHasherFactory implements BaseHasherFactory {
 
 	
@@ -14,7 +16,7 @@ public class StringHasherFactory implements BaseHasherFactory {
 	}
 	
 	@Override
-	public String2UniversalHasher newHasher() {
+	public String2UniversalHasher newHasher() throws InvalidConfigException {
 		return new String2UniversalHasher(fieldName,numBins,maxStringLength);
 	}
 
