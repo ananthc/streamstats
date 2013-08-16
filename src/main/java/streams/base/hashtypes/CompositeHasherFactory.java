@@ -3,7 +3,7 @@ package streams.base.hashtypes;
 
 import streams.base.simplestats.InvalidConfigException;
 
-public class CompositeHasherFactory  extends  BaseHasherFactory {
+public class CompositeHasherFactory  implements   BaseHasherFactory {
 
     private String[] fieldNames;
 

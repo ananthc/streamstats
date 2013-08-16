@@ -89,6 +89,9 @@ public class Composite2UniversalHasher extends BaseHasher {
 
     }
 
+    public static int getNextNearestIndexPowerOf2( int number) {
+        return number == 0 ? 0 :(32 - Integer.numberOfLeadingZeros(number - 1));
+    }
 
     public long seedForUniversalHashFamily(long max) {
         long finalSeed = 0;

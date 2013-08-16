@@ -1,16 +1,16 @@
 package streams.base.simplestats;
 
-import java.util.*;
-
-import backtype.storm.tuple.Fields;
-import backtype.storm.tuple.Values;
-import streams.base.hashtypes.BaseHasher;
-import streams.base.hashtypes.BaseHasherFactory;
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichBolt;
+import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
+import backtype.storm.tuple.Values;
+import streams.base.hashtypes.BaseHasher;
+import streams.base.hashtypes.BaseHasherFactory;
+
+import java.util.*;
 
 public class BJKSTDistinctElements<T extends BaseHasherFactory>  extends BaseRichBolt {
 	
@@ -110,10 +110,19 @@ public class BJKSTDistinctElements<T extends BaseHasherFactory>  extends BaseRic
 	}
 
 	@Override
-	public void execute(Tuple tuple) {
+	public void execute(Tuple tuple)  {
 		for ( int i =0 ; i < numMedians; i++) {
-			String binaryRepr = Integer.toBinaryString(hHashers.get(i).getIntegerRepresentation(tuple));
-			int zereosP = binaryRepr.length() - binaryRepr.lastIndexOf('1');
+            String binaryRepr = null;
+            try {
+                binaryRepr = Integer.toBinaryString(hHashers.get(i).hashToInt(tuple));
+            } catch (InvalidDataException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+            if (binaryRepr == null)  {
+                _collector.ack(tuple);
+                return;
+            }
+            int zereosP = binaryRepr.length() - binaryRepr.lastIndexOf('1');
             int currentZ = limits.get(i);
             if (zereosP >= currentZ) {
                 HashSet<String> currentBuffer = buffers.get(i);
