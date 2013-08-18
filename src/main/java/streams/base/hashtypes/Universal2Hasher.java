@@ -1,8 +1,9 @@
 package streams.base.hashtypes;
 
+import java.io.Serializable;
 import java.util.Random;
 
-public class Universal2Hasher {
+public class Universal2Hasher implements Serializable {
 	
 	private int w=32;
 	private int m ;

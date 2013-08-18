@@ -3,7 +3,9 @@ package streams.base.hashtypes;
 import backtype.storm.tuple.Tuple;
 import streams.base.simplestats.InvalidDataException;
 
-public class Integer2UniversalHasher extends BaseHasher {
+import java.io.Serializable;
+
+public class Integer2UniversalHasher extends BaseHasher implements Serializable {
 
 	private String fieldNameToUse;
 

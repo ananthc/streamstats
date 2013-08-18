@@ -1,6 +1,8 @@
 package streams.base.hashtypes;
 
-public class IntegerHasherFactory implements BaseHasherFactory {
+import java.io.Serializable;
+
+public class IntegerHasherFactory implements BaseHasherFactory, Serializable {
 
 	private String fieldName;
 	private int numBins;

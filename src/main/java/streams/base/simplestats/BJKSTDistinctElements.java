@@ -10,9 +10,10 @@ import backtype.storm.tuple.Values;
 import streams.base.hashtypes.BaseHasher;
 import streams.base.hashtypes.BaseHasherFactory;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class BJKSTDistinctElements<T extends BaseHasherFactory>  extends BaseRichBolt {
+public class BJKSTDistinctElements<T extends BaseHasherFactory>  implements Serializable {
 	
 
 	private static final long serialVersionUID = -2032575802259420762L;
@@ -21,7 +22,7 @@ public class BJKSTDistinctElements<T extends BaseHasherFactory>  extends BaseRic
 	
 	private int w = 32;
 	
-	private int numMedians=100;
+	private int numMedians=25;
 	
 	private float error = 0.02f;
 	
@@ -40,8 +41,7 @@ public class BJKSTDistinctElements<T extends BaseHasherFactory>  extends BaseRic
 	
 	// make c as large as possible. This reflects the size of the buffer 
 	private int c;
-	
-	private OutputCollector _collector;
+
 	
 	private List<Integer> limits = new ArrayList<Integer>();
 	
@@ -103,24 +103,15 @@ public class BJKSTDistinctElements<T extends BaseHasherFactory>  extends BaseRic
 		}
 	}
 	
-	@Override
-	public void prepare(Map stormConf, TopologyContext context,
-			OutputCollector collector) {
-		_collector = collector;
-	}
 
-	@Override
-	public void execute(Tuple tuple)  {
+
+	public Values processTuple(Tuple tuple) throws InvalidDataException {
 		for ( int i =0 ; i < numMedians; i++) {
             String binaryRepr = null;
             try {
                 binaryRepr = Integer.toBinaryString(hHashers.get(i).hashToInt(tuple));
             } catch (InvalidDataException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-            if (binaryRepr == null)  {
-                _collector.ack(tuple);
-                return;
             }
             int zereosP = binaryRepr.length() - binaryRepr.lastIndexOf('1');
             int currentZ = limits.get(i);
@@ -147,7 +138,7 @@ public class BJKSTDistinctElements<T extends BaseHasherFactory>  extends BaseRic
 		HashMap<Integer,Integer> results = new HashMap<Integer,Integer>();
         for ( int i =0 ; i < numMedians; i++) {
             int currentGuess = (int)  (buffers.get(i).size() * Math.pow(2,limits.get(i)));
-            if (results.containsKey(currentGuess)) {
+            if (!results.containsKey(currentGuess)) {
                 results.put(currentGuess,1);
             }
             else {
@@ -156,20 +147,17 @@ public class BJKSTDistinctElements<T extends BaseHasherFactory>  extends BaseRic
             }
         }
         int finalEstimate = 0;
+        int highestVote = 0;
         Iterator it = results.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<Integer,Integer> pair = (Map.Entry<Integer,Integer>)it.next();
             int possibleAnswer = pair.getValue();
-            if (possibleAnswer > 0) {
-                finalEstimate = possibleAnswer;
+            if (possibleAnswer > highestVote ) {
+                highestVote = possibleAnswer;
+                finalEstimate = pair.getKey();
             }
         }
-    	_collector.emit(tuple, new Values(finalEstimate));
-    	_collector.ack(tuple);
+        return  new Values(finalEstimate);
 	}
 
-	@Override
-	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("distinctCount"));
-	}
 }
