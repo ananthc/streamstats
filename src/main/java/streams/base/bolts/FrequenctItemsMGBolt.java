@@ -1,6 +1,7 @@
 package streams.base.bolts;
 
 
+import backtype.storm.Config;
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;
@@ -18,7 +19,7 @@ public class FrequenctItemsMGBolt<T> extends BaseRichBolt {
 
     private OutputCollector collector;
 
-    private FrequencyCountsMisraGries<T> counter = null;
+    private FrequencyCountsMisraGries<T> counter;
 
     private boolean anchorTuple = true;
 
@@ -39,6 +40,7 @@ public class FrequenctItemsMGBolt<T> extends BaseRichBolt {
     @Override
     public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
         this.collector =  outputCollector;
+
     }
 
     public boolean isStrictMode() {
@@ -70,5 +72,7 @@ public class FrequenctItemsMGBolt<T> extends BaseRichBolt {
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
         declarer.declare(new Fields("frequentItems"));
     }
+
+
 
 }

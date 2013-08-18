@@ -7,11 +7,12 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class FrequencyCountsMisraGries<T>  {
+public class FrequencyCountsMisraGries<T>  implements Serializable {
 
 	protected int mapMaxSize =1;
 	protected String fieldName = null;
