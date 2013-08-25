@@ -19,6 +19,8 @@ public class SimpleStringSpout extends BaseRichSpout {
 
     private SpoutOutputCollector _collector;
 
+    private Long  messageIdCounter = 0L;
+
     private String[] randomStrings = {
                                         "one","two","three","four","five","six","seven","eight","nine","ten","eleven",
                                         "tweleve","thirteen","fourteen","fifteen","sixteen","seventeen",
@@ -64,7 +66,7 @@ public class SimpleStringSpout extends BaseRichSpout {
         for ( int i=0; i < tupleDimensionSize; i++) {
             stringArray[i]=randomStrings[rand.nextInt(randomStrings.length)];
         }
-        _collector.emit(new Values(stringArray));
+        _collector.emit(new Values(stringArray),messageIdCounter++);
     }
 
     @Override

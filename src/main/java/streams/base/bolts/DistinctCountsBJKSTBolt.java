@@ -41,9 +41,9 @@ public class DistinctCountsBJKSTBolt<T extends BaseHasherFactory> extends BaseRi
     public void execute(Tuple tuple) {
         try {
             if (anchorTuple)
-                collector.emit(tuple,this.distinctsCounter.processTuple(tuple) );
+                collector.emit(tuple,distinctsCounter.processTuple(tuple) );
             else
-                collector.emit(this.distinctsCounter.processTuple(tuple));
+                collector.emit(distinctsCounter.processTuple(tuple));
         } catch (InvalidDataException e) {
             if (strictMode)
                 collector.fail(tuple);

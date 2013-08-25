@@ -58,7 +58,7 @@ public class FrequentItemsMGTransactionalBolt<T> extends BaseTransactionalBolt
     @Override
     public void execute(Tuple tuple) {
         try {
-            lastKnownFrequencyCounts= this.counter.processTuple(tuple);
+            lastKnownFrequencyCounts= counter.processTuple(tuple);
         } catch (InvalidDataException e) {
             e.printStackTrace();
             if (strictMode)

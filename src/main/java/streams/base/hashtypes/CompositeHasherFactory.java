@@ -3,7 +3,9 @@ package streams.base.hashtypes;
 
 import streams.base.simplestats.InvalidConfigException;
 
-public class CompositeHasherFactory  implements   BaseHasherFactory {
+import java.io.Serializable;
+
+public class CompositeHasherFactory  implements   BaseHasherFactory, Serializable {
 
     private String[] fieldNames;
 

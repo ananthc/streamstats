@@ -6,11 +6,12 @@ import org.apache.commons.lang.math.JVMRandom;
 import streams.base.simplestats.InvalidConfigException;
 import streams.base.simplestats.InvalidDataException;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class Composite2UniversalHasher extends BaseHasher {
+public class Composite2UniversalHasher extends BaseHasher implements Serializable {
 
     private String[] fieldNames;
 
@@ -83,7 +84,7 @@ public class Composite2UniversalHasher extends BaseHasher {
                     (hashers.get(secondIndex).hashToInt(input)  + seedsForVectorHash.get(secondIndex));
         }
         if (isKOdd)  {
-            sum = sum + (input.getIntegerByField(this.fieldNames[k-1]) + seedsForVectorHash.get(k-1));
+            sum = sum + (hashers.get(k-1).hashToInt(input)  + seedsForVectorHash.get(k-1));
         }
         return  (int) (( sum % modValue )  / divValue );
 

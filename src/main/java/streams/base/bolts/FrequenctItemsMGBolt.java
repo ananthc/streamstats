@@ -1,7 +1,6 @@
 package streams.base.bolts;
 
 
-import backtype.storm.Config;
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;
@@ -55,9 +54,9 @@ public class FrequenctItemsMGBolt<T> extends BaseRichBolt {
     public void execute(Tuple tuple) {
         try {
             if (anchorTuple)
-                collector.emit(tuple,this.counter.processTuple(tuple) );
+                collector.emit(tuple,counter.processTuple(tuple) );
             else
-                collector.emit(this.counter.processTuple(tuple));
+                collector.emit(counter.processTuple(tuple));
         } catch (InvalidDataException e) {
             if (strictMode)
                 collector.fail(tuple);

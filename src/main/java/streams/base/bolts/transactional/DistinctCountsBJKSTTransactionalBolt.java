@@ -12,7 +12,6 @@ import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 import streams.base.hashtypes.BaseHasherFactory;
 import streams.base.simplestats.BJKSTDistinctElements;
-import streams.base.simplestats.FrequencyCountsMisraGries;
 import streams.base.simplestats.InvalidConfigException;
 import streams.base.simplestats.InvalidDataException;
 
@@ -64,7 +63,7 @@ public class DistinctCountsBJKSTTransactionalBolt<T extends BaseHasherFactory> e
     @Override
     public void execute(Tuple tuple) {
         try {
-            lastKnownDistinctCount= this.distinctsCounter.processTuple(tuple);
+            lastKnownDistinctCount= distinctsCounter.processTuple(tuple);
         } catch (InvalidDataException e) {
             e.printStackTrace();
             if (strictMode)

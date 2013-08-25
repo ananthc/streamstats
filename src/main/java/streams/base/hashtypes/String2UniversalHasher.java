@@ -4,13 +4,14 @@ import backtype.storm.tuple.Tuple;
 import streams.base.simplestats.InvalidConfigException;
 import streams.base.simplestats.InvalidDataException;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 
 
-public class String2UniversalHasher extends BaseHasher {
+public class String2UniversalHasher extends BaseHasher implements Serializable {
 
     private String fieldNameToUse;
 
@@ -49,32 +50,36 @@ public class String2UniversalHasher extends BaseHasher {
         if ( m > lowerLimitForPrimes)  {
             lowerLimitForPrimes = m;
         }
-        primes = this.getPrimes(lowerLimitForPrimes,Integer.MAX_VALUE,(maxStringLength + 1) );
+        primes = this.getPrimes(lowerLimitForPrimes,(lowerLimitForPrimes * 10),(maxStringLength + 1) );
     }
 
 
     private List<Integer> getPrimes(int lowerLimit, int upperLimit,int count) throws InvalidConfigException {
+        if (upperLimit < 2) {
+            throw new InvalidConfigException("Upper limit of prime too less to be effective");
+        }
         List<Integer> returnList = new ArrayList<Integer>(count);
-        boolean[] isPrime = new boolean[upperLimit + 1];
-        for (int i = 2; i <= upperLimit; i++) {
+        boolean[] isPrime = new boolean[upperLimit];
+        for (int i = 2; i < upperLimit; i++) {
             isPrime[i] = true;
         }
         for (int i = 2; i*i <= upperLimit; i++) {
             if (isPrime[i]) {
-                for (int j = i; i*j <= upperLimit; j++) {
-                    isPrime[i*j] = false;
+                for (int j = i; i*j < upperLimit; j++) {
+                    if ((i * j) < upperLimit )
+                        isPrime[i*j] = false;
                 }
             }
         }
         Random rand = new Random();
-        int difference = upperLimit - lowerLimit;
+        int difference = upperLimit - lowerLimit-1;
         if (difference < 0) {
             throw new InvalidConfigException("Illegal lower and upper limits given for prime ranges");
         }
         int k = 0;
         while ( k < count) {
             int nextStartingPoint = rand.nextInt(difference);
-            for (int j = (lowerLimit + nextStartingPoint); j <= upperLimit; j++) {
+            for (int j = (lowerLimit + nextStartingPoint); j < upperLimit; j++) {
                 if (isPrime[j]) {
                     returnList.add(j);
                     k++;
