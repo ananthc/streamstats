@@ -2,7 +2,6 @@ package streams.base.hashtypes;
 
 import backtype.storm.tuple.Tuple;
 import org.apache.commons.lang.math.JVMRandom;
-import streams.base.simplestats.InvalidConfigException;
 import streams.base.simplestats.InvalidDataException;
 
 import java.util.ArrayList;

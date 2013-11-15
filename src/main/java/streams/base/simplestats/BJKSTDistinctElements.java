@@ -1,10 +1,5 @@
 package streams.base.simplestats;
 
-import backtype.storm.task.OutputCollector;
-import backtype.storm.task.TopologyContext;
-import backtype.storm.topology.OutputFieldsDeclarer;
-import backtype.storm.topology.base.BaseRichBolt;
-import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 import streams.base.hashtypes.BaseHasher;
@@ -92,7 +87,6 @@ public class BJKSTDistinctElements<T extends BaseHasherFactory>  implements Seri
 	}
 	
 	private void init() throws InvalidConfigException {
-		int numSecondaryBins = (int)(Math.pow(error,-4.0) * Math.pow(Math.log(numberOfBins), 2));
         this.bufferSize =  (int) ((this.sizeOfMedianSet) / Math.pow(this.error,2.0) ) ;
         lengthOfIntegerRepresentation = ("%0" + intLength + "d");
 		for ( int i =0 ; i < numMedians; i++) {

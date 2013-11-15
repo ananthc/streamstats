@@ -11,7 +11,6 @@ import streams.base.simplestats.BJKSTDistinctElements;
 import streams.base.simplestats.InvalidConfigException;
 import streams.base.simplestats.InvalidDataException;
 
-
 import java.util.Map;
 
 public class DistinctCountsBJKSTBolt<T extends BaseHasherFactory> extends BaseRichBolt {

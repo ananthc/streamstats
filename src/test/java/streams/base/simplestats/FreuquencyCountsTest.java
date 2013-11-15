@@ -22,10 +22,10 @@ public class FreuquencyCountsTest {
 //        TopologyBuilder builder = new TopologyBuilder();
 //        builder.setSpout("spout", new SimpleIntegerSpout(3,6000), 1);
 //        IntegerHasherFactory intFirstHasherFactory = new IntegerHasherFactory("2",20,32);
-//        IntegerHasherFactory intSecondHasherFactory = new IntegerHasherFactory("2",20,32);
+//        IntegerHasherFactory intSecondHasherFactory = new IntegerHasherFactory("2",20,32);    // USE getNumberOfSecondaryBinsForPrimaryBins method in BJKST class here to get num of bins
 //        builder.setSpout("spout", new SimpleStringSpout(5), 1);
 //        StringHasherFactory intFirstHasherFactory = new StringHasherFactory("2",20,1024);
-//        StringHasherFactory intSecondHasherFactory = new StringHasherFactory("2",20,1024);
+//        StringHasherFactory intSecondHasherFactory = new StringHasherFactory("2",20,1024);  // USE getNumberOfSecondaryBinsForPrimaryBins method in BJKST class here to get num of bins
 //
 //        try {
 //            // count first col hinged on the 2nd col - i.e. all elements in the 2nd col
@@ -53,7 +53,7 @@ public class FreuquencyCountsTest {
 
         builder.setSpout("spout", new SimpleCompositeSpout(stringIndexes,5,20), 1);
         CompositeHasherFactory intFirstHasherFactory = new CompositeHasherFactory(new String[]{"0","1","2","3","4"},dataTypeInfo,20,30);
-        CompositeHasherFactory intSecondHasherFactory = new CompositeHasherFactory(new String[]{"0","1","2","3","4"},dataTypeInfo,5,30);
+        CompositeHasherFactory intSecondHasherFactory = new CompositeHasherFactory(new String[]{"0","1","2","3","4"},dataTypeInfo,5,30); // USE getNumberOfSecondaryBinsForPrimaryBins method in BJKST class here to get num of bins
 
         try {
             // count first col hinged on the 2nd col - i.e. all elements in the 2nd col
