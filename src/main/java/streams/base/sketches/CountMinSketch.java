@@ -1,14 +1,22 @@
-package streams.base.simplestats;
+package streams.base.sketches;
 
 
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 import streams.base.hashtypes.BaseHasher;
 import streams.base.hashtypes.BaseHasherFactory;
+import streams.base.simplestats.InvalidDataException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+
+/*
+ http://dimacs.rutgers.edu/~graham/pubs/papers/cmencyc.pdf
+ http://dimacs.rutgers.edu/~graham/pubs/papers/cm-latin.pdf
+
+*/
 
 public class CountMinSketch<T extends BaseHasherFactory> implements Serializable{
 

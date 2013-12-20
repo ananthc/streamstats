@@ -1,4 +1,4 @@
-package streams.base.simplestats;
+package streams.base.sketches;
 
 
 public class DotProductSketch {
