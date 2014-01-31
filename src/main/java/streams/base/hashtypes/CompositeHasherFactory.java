@@ -22,8 +22,28 @@ public class CompositeHasherFactory  implements   BaseHasherFactory, Serializabl
         this.maxStringLength = maxStringLength;
     }
 
+
+
     @Override
     public BaseHasher newHasher() throws InvalidConfigException {
         return new Composite2UniversalHasher(fieldNames, types,  numBins,  maxStringLength);
+    }
+
+    @Override
+    public int getNumBins() {
+        return numBins;
+    }
+
+    @Override
+    public void setNumBins(int numBins) {
+        this.numBins = numBins;
+    }
+
+    public int getMaxStringLength() {
+        return maxStringLength;
+    }
+
+    public void setMaxStringLength(int maxStringLength) {
+        this.maxStringLength = maxStringLength;
     }
 }

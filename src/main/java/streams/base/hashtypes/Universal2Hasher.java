@@ -3,6 +3,11 @@ package streams.base.hashtypes;
 import java.io.Serializable;
 import java.util.Random;
 
+/***
+ * Refer to http://en.wikipedia.org/wiki/Universal_hashing
+ * for implementation details
+ */
+
 public class Universal2Hasher implements Serializable {
 	
 	private int w=32;
@@ -19,7 +24,7 @@ public class Universal2Hasher implements Serializable {
 		w = numOfBitsInWord;
         rand = new Random();
 		a = seedAforUniversalHashFamily((int)Math.pow(2, w));
-		b=  new Random().nextInt((int)Math.pow(2, (w-m)));
+		b=  new Random().nextInt((int)Math.pow(2, (w-M)));
 	}
 	
 	public int seedAforUniversalHashFamily(int max) {

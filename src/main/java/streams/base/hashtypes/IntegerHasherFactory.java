@@ -19,6 +19,15 @@ public class IntegerHasherFactory implements BaseHasherFactory, Serializable {
 		return new Integer2UniversalHasher(fieldName,numBins,wordSize);
 	}
 
+    @Override
+    public int getNumBins() {
+        return numBins;
+    }
+
+    @Override
+    public void setNumBins(int numBins) {
+        this.numBins = numBins;
+    }
 
 
 }

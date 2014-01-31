@@ -16,4 +16,14 @@ public class IntVectorHasherFactory implements BaseHasherFactory {
 		return new IntVector2UniversalHasher(fieldNames,numBins);
 	}
 
+    @Override
+    public int getNumBins() {
+        return numBins;
+    }
+
+    @Override
+    public void setNumBins(int numBins) {
+        this.numBins = numBins;
+    }
+
 }

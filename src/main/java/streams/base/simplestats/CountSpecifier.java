@@ -3,7 +3,9 @@ package streams.base.simplestats;
 
 import backtype.storm.tuple.Tuple;
 
-public interface CountSpecifier {
+import java.io.Serializable;
+
+public interface CountSpecifier extends Serializable {
 
     int getCount(Tuple input);
 

@@ -22,4 +22,14 @@ public class StringHasherFactory implements BaseHasherFactory, Serializable {
 		return new String2UniversalHasher(fieldName,numBins,maxStringLength);
 	}
 
+    @Override
+    public int getNumBins() {
+        return numBins;
+    }
+
+    @Override
+    public void setNumBins(int numBins) {
+        this.numBins = numBins;
+    }
+
 }

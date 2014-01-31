@@ -18,11 +18,11 @@ import java.util.List;
 
 */
 
-public class CountMinSketch<T extends BaseHasherFactory> implements Serializable{
+public class CountMinSketch<T extends BaseHasherFactory> implements Serializable {
 
-    protected float errorFactor = 0.02f;
+    protected float errorFactor = 0.0002f;
 
-    protected float probabilityOfErrror = 0.1f;
+    protected float probabilityOfErrror = 0.00001f;
 
     protected streams.base.simplestats.CountSpecifier countSpecifier = null;
 
@@ -30,7 +30,7 @@ public class CountMinSketch<T extends BaseHasherFactory> implements Serializable
 
     protected Integer[][] sketchArray = null;
 
-    private List<BaseHasher> hashers = new ArrayList<BaseHasher>();
+    private List<BaseHasher> hashers = null;
 
     private int numRows;
 
@@ -38,7 +38,8 @@ public class CountMinSketch<T extends BaseHasherFactory> implements Serializable
 
 
     public CountMinSketch(T hasherFactory, float errorFactor, float probabilityOfErrror,
-                          streams.base.simplestats.CountSpecifier countSpecifier) throws streams.base.simplestats.InvalidConfigException {
+                          streams.base.simplestats.CountSpecifier countSpecifier)
+            throws streams.base.simplestats.InvalidConfigException {
 
         this.errorFactor = errorFactor;
         this.probabilityOfErrror = probabilityOfErrror;
@@ -46,7 +47,8 @@ public class CountMinSketch<T extends BaseHasherFactory> implements Serializable
         init(hasherFactory);
     }
 
-    public CountMinSketch(T hasherFactory,float errorFactor, float probabilityOfErrror) throws streams.base.simplestats.InvalidConfigException {
+    public CountMinSketch(T hasherFactory,float errorFactor, float probabilityOfErrror)
+            throws streams.base.simplestats.InvalidConfigException {
         this.errorFactor = errorFactor;
         this.probabilityOfErrror = probabilityOfErrror;
         this.countSpecifier = new streams.base.simplestats.CountSpecifier() {
@@ -58,8 +60,13 @@ public class CountMinSketch<T extends BaseHasherFactory> implements Serializable
         init(hasherFactory);
     }
 
+    public static int computeNumColumns(float errorFactor) {
+        return (int) Math.ceil( (2.71) / errorFactor);
+    }
+
     private void init(T hasherFactory) throws streams.base.simplestats.InvalidConfigException {
-        numCols = (int) Math.ceil( (2) / this.errorFactor);
+        hashers = new ArrayList<BaseHasher>();
+        numCols = CountMinSketch.computeNumColumns(this.errorFactor);
         numRows = (int) Math.ceil(Math.log( (1) / this.probabilityOfErrror));
         for (int i = 0; i < numRows; i++) {
             hashers.add(hasherFactory.newHasher());
@@ -75,7 +82,7 @@ public class CountMinSketch<T extends BaseHasherFactory> implements Serializable
 
     public Values processTuple(Tuple input) throws InvalidDataException {
         int columnIndex = 0;
-        int lowestRowVal = Integer.MIN_VALUE;
+        int lowestRowVal = Integer.MAX_VALUE;
         for (int i = 0; i < numRows; i++) {
             columnIndex = hashers.get(i).hashToInt(input);
             sketchArray[i][columnIndex] = sketchArray[i][columnIndex] + countSpecifier.getCount(input);
@@ -83,7 +90,7 @@ public class CountMinSketch<T extends BaseHasherFactory> implements Serializable
                 lowestRowVal = sketchArray[i][columnIndex];
         }
         Values returnValue = new Values();
-        returnValue.add(0,lowestRowVal);
+        returnValue.add(lowestRowVal);
         return returnValue;
     }
 
